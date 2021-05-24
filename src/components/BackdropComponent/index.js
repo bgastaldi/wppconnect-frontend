@@ -20,9 +20,8 @@ export default function BackdropComponent({ open }) {
         <div>
             <Backdrop className={classes.backdrop} open={open}>
                 <Layout>
-                    <Image src={HandOk} alt={"Wait for QRCode"} />
                     <h1>
-                        Aguarde alguns segundos...
+                        Please wait...
                     </h1>
                 </Layout>
             </Backdrop>

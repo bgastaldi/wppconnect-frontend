@@ -16,6 +16,7 @@ export const LeftContainer = styled.div`
   display: flex;
   background: #fff;
   height: 100%;
+  min-width: 300px;
   border-right: 1px solid #E8E8EF;
 
   ul {

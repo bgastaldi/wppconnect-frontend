@@ -10,8 +10,8 @@ function ChangeSessionDialog({open, handleClose, selectedValue}) {
 
     useEffect(() => {
         async function getAllSessions() {
-            const {data} = await api.get(`${getSession()}/show-all-sessions`, config);
-            setSessions(data);
+            const {data} = await api.get(`show-all-sessions`, config);
+            setSessions(data.response);
         }
 
         getAllSessions();

@@ -26,7 +26,7 @@ export const MenuItems = styled.section`
   flex-direction: column;
   padding: 1em;
   list-style-type: none;
-  
+
   .selected {
     background: #f4f6fb;
     color: #47a7f6;
@@ -36,12 +36,31 @@ export const MenuItems = styled.section`
   li {
     display: flex;
     align-items: center;
-    padding: 10px;
-    //margin-bottom: 1em;
+    //padding: 10px;
+    margin-bottom: 1em;
     width: 100%;
-    
+    transition-duration: 200ms;
+    border-radius: .4rem;
+
+    :hover {
+      background: #f4f6fb;
+
+      * {
+        color: #47a7f6
+      }
+    }
+
     .disabled {
       cursor: not-allowed;
+      color: #999;
+
+      :hover {
+        background: #fff;
+
+        * {
+          color: #999;
+        }
+      }
     }
   }
 
@@ -124,7 +143,7 @@ export const LogoutButton = styled.p`
   text-align: center;
   padding: 10px;
   transition-duration: 200ms;
-  
+
   :hover {
     background: red;
   }

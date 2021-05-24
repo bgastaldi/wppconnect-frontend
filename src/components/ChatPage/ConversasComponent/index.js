@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {ContactInfo, Layout, SearchComponent, UserData} from "./style";
 import {Search} from "react-feather";
 import PropTypes from "prop-types";
@@ -6,22 +6,41 @@ import PropTypes from "prop-types";
 const defaultImage = "https://pbs.twimg.com/profile_images/1259926100261601280/OgmLtUZJ_400x400.png";
 
 const ConversasComponent = ({chats, onSearch, onClickContact}) => {
+    useEffect(() => {
+
+    }, []);
+
+    const onChangeContact = () => {
+        const elContactsMain = document.querySelector("#all-contacts");
+        const contacts = elContactsMain.querySelectorAll(".contact-li");
+
+        for (const user of contacts) {
+            user.addEventListener("click", function () {
+                const current = document.getElementsByClassName("active");
+                console.log(current);
+
+                if (current.length > 0) {
+                    current[0].classList.remove("active");
+                }
+
+                this.classList.add("active");
+            })
+        }
+    }
+
+
     return (
         <Layout>
-            <SearchComponent>
+            <SearchComponent style={{marginBottom: 0}}>
                 <Search/> <input placeholder={"Procure um contato"} onChange={(e) => onSearch(e)}/>
             </SearchComponent>
 
-            <h2>
-                Conversas
-            </h2>
-
-            <ul>
+            <ul id={"all-contacts"} onClick={() => onChangeContact()}>
                 {
                     chats.length > 0 ? (
                         chats.map((contact, index) => {
                             return (
-                                <li key={index} onClick={() => onClickContact(contact)}>
+                                <li className={"contact-li"} key={index} onClick={() => onClickContact(contact)}>
                                     <ContactInfo>
                                         <input
                                             type={"radio"}
@@ -30,20 +49,30 @@ const ConversasComponent = ({chats, onSearch, onClickContact}) => {
 
                                         <UserData>
                                             <img
-                                                src={contact.contact.profilePicThumbObj.eurl === undefined ? defaultImage : contact.contact.profilePicThumbObj.eurl === null ? `https://ui-avatars.com/api/?name=${contact.name}?background=random` : contact.contact.profilePicThumbObj.eurl}
+                                                src={`https://ui-avatars.com/api/?name=${contact.name}?background=random`}
                                                 alt={`${contact.name}`}
                                                 loading={"lazy"}
                                                 onError={(e) => e.target.src = "https://pbs.twimg.com/profile_images/1259926100261601280/OgmLtUZJ_400x400.png"}
                                             />
                                             <div className={"principal-info"}>
-                                                <small className={"contact-phone"}>
-                                                    {contact.id.user}
+                                                <small className={"contact-name"}>
+                                                    {contact.name}
+                                                    {/*{contact.id.user}*/}
                                                 </small>
-                                                <p className={"contact-name"}>
+                                                <div className={"contact-message"}>
+                                                    {/*{contact.msgs}*/}
+                                                    <p className={"left"}>
+                                                        {contact.msgs[contact.msgs.length - 1].body}
+                                                    </p>
+
                                                     {
-                                                        contact.name === undefined ? contact.contact.formattedName : contact.name
+                                                        contact.unreadCount === 0 ? null : (
+                                                            <div className={"unread-message"}>
+                                                                {contact.unreadCount}
+                                                            </div>
+                                                        )
                                                     }
-                                                </p>
+                                                </div>
                                             </div>
                                         </UserData>
                                     </ContactInfo>

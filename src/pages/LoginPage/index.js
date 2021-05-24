@@ -11,7 +11,7 @@ import ModalMenu from "../../components/MenuModal";
 import ErrorModal from "../../components/ErrorModal";
 import BackdropComponent from "../../components/BackdropComponent";
 import {useLocation} from "react-router-dom";
-import {defaultKey, login} from "../../services/auth";
+import {TOKEN_KEY} from "../../services/auth";
 import LoginImage from "../../assets/login-v2.72cd8a26.svg";
 
 const useStyles = makeStyles((theme) => ({
@@ -62,14 +62,14 @@ export default function NewSessionPage() {
         });
 
         socket.off("session-logged").on("session-logged", (status) => {
-            if (status) {
+            if (status.session === session) {
                 if (layoutRef.current !== null) {
                     layoutRef.current.classList.add("saida-bottom-top");
                 }
 
-                setTimeout(() => {
-                    window.location.href = "chat";
-                }, 500);
+                // window.location.href = "/chat"
+                history.push("/chat");
+                localStorage.setItem(TOKEN_KEY, JSON.stringify({session: session, token: token}));
             } else {
                 alert("Whatsapp fechado com sucesso");
             }
@@ -78,6 +78,7 @@ export default function NewSessionPage() {
 
     async function submitSession(e) {
         e.preventDefault();
+
 
         if (session === "") {
             handleOpenErrorModal();
@@ -98,18 +99,9 @@ export default function NewSessionPage() {
             const checkConn = await api.get(`${session}/check-connection-session`, config);
             if (!checkConn.data.status) {
                 await signSession();
-                login(JSON.stringify({session: session, token: token}));
             } else {
-                if (defaultKey() !== null) {
-                    console.log("1 aqui");
-                    await api.post(`${session}/close-session`, null, config);
-                    await signSession();
-                    login(JSON.stringify({session: session, token: token}));
-                } else {
-                    console.log("2 aqui");
-                    window.location.href = "chat";
-                    login(JSON.stringify({session: session, token: token}));
-                }
+                history.push("/chat");
+                localStorage.setItem(TOKEN_KEY, JSON.stringify({session: session, token: token}));
             }
         } catch (e) {
             setTimeout(function () {

@@ -241,16 +241,9 @@ export const ChatContainer = styled.div`
     padding: 2em;
     list-style-type: none;
 
-    :hover {
-      ::-webkit-scrollbar {
-        width: 7px;
-        height: 7px;
-      }
-    }
-
     ::-webkit-scrollbar {
-      width: 0;
-      height: 0;
+      width: 7px;
+      height: 7px;
     }
 
     ::-webkit-scrollbar-track {
@@ -258,7 +251,7 @@ export const ChatContainer = styled.div`
     }
 
     ::-webkit-scrollbar-thumb {
-      background: #929090;
+      background: #9a9a9a;
       transition-duration: 200ms;
       border-radius: 10px;
     }

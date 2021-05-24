@@ -114,8 +114,8 @@ export const InputCustom = styled.div`
     padding: 10px;
     background: #fff;
     border: 1px solid rgba(0, 0, 0, .1);
-    min-height: 48px;
-    border-radius: 10px;
+    min-height: 40px;
+    border-radius: 7px;
 
     :disabled {
       cursor: not-allowed;
@@ -124,7 +124,7 @@ export const InputCustom = styled.div`
 
     :focus + span, :not([value=""]) + span {
       font-size: 10px;
-      top: -7px;
+      top: -5px;
       padding: 0 5px;
       transition: .1s all ease;
       background: #fff;
@@ -144,12 +144,14 @@ export const InputCustom = styled.div`
     position: absolute;
     left: 10px;
     top: 13px;
-    font-size: 14px;
+    font-size: 13px;
     pointer-events: none;
     font-weight: 500;
 
     svg {
       margin-right: 10px;
+      width: 15px;
+      height: 15px;
     }
   }
 `;

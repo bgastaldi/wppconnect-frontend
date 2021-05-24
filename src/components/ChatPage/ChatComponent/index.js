@@ -22,7 +22,7 @@ const ChatComponent = ({message, session, isMe}) => {
     const audioRef = useRef(null);
     const [audioUrl, setAudioUrl] = useState(undefined);
     const [display, setDisplay] = useState("block");
-    const [openModalImage, setOpenModalImage] = React.useState(false);
+    const [openModalImage, setOpenModalImage] = useState(false);
     const [clickedUrl, setClickedUrl] = useState("");
     const textRef = useRef(null);
 
@@ -31,7 +31,7 @@ const ChatComponent = ({message, session, isMe}) => {
     }, [textRef]);
 
     const onClickDownload = async (type, option) => {
-        const response = await api.get(`${session}/get-media-by-message/${message.id}`, config);
+        const response = await api.get(`${session}/get-media-by-message/${message.id}`, config());
 
         if (type === "image") {
             imageRef.current.src = `data:image/png;base64, ${response.data}`;

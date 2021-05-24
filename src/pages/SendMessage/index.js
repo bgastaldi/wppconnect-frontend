@@ -29,7 +29,6 @@ const SendMessagePage = () => {
                 chatRef.current.scrollTop = chatRef.current.scrollHeight;
             }
 
-            console.log(message);
             let estruturaMessage = {
                 body: message.message.body,
                 username: message.message.chat.name,

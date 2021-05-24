@@ -6,6 +6,12 @@ import {getSession} from "../../services/auth";
 import config from "../../util/sessionHeader";
 import {LeftContainer, RightContainer} from "../GroupPage/style";
 import {ListOrdered, Sheet, UserPlus} from "lucide-react";
+import {
+    JsonToCsv,
+    useJsonToCsv
+} from 'react-json-csv';
+
+const {saveAsCsv} = useJsonToCsv();
 
 const ContactsPage = () => {
     const [data, setData] = useState([]);
@@ -21,7 +27,7 @@ const ContactsPage = () => {
     }, []);
 
     async function getAllContacts() {
-        const {data} = await api.get(`${getSession()}/all-contacts`, config);
+        const {data} = await api.get(`${getSession()}/all-contacts`, config());
         const arr = [];
 
         for (const contact of data.response) {
@@ -85,6 +91,12 @@ const ContactsPage = () => {
         }
     }
 
+    const columnsExcel = () => {
+        return ({
+            "name": "Name",
+            "phone": "Phone"
+        })
+    }
 
     return (
         <Layout>
@@ -98,10 +110,10 @@ const ContactsPage = () => {
                                 </div>
                                 <div className={"wrapper-text"}>
                                     <h2>
-                                        Todos os Contatos
+                                        All Contacts
                                     </h2>
                                     <p>
-                                        Gerencie todos os seus grupos.
+                                        Manage all your groups.
                                     </p>
                                 </div>
                             </div>
@@ -117,23 +129,30 @@ const ContactsPage = () => {
                                         Adicionar Contatos
                                     </h2>
                                     <p>
-                                        Convide participantes para os seus grupos rapidamente.
+                                        Add contacts remotely.
                                     </p>
                                 </div>
                             </div>
                         </li>
 
-                        <li onClick={() => setSelected(1)}>
+                        <li onClick={() => {
+                            saveAsCsv({
+                                data: rows,
+                                fields: {"name": "Name", "phone": "Phone"},
+                                filename: `contacts-${getSession()}`
+                            });
+                            setSelected(3);
+                        }}>
                             <div className={"wrapper-li"}>
                                 <div className={"wrapper-ic"}>
                                     <Sheet/>
                                 </div>
                                 <div className={"wrapper-text"}>
                                     <h2>
-                                        Exportar Lista de Contatos
+                                        Export Contact List
                                     </h2>
                                     <p>
-                                        Exporte a sua lista de contatos para o excel.
+                                        Export your contact list to excel.
                                     </p>
                                 </div>
                             </div>

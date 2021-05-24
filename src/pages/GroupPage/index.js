@@ -4,7 +4,7 @@ import {HeaderComponent, TableContainer} from "../Contacts/style";
 import api from "../../services/api";
 import {getSession} from "../../services/auth";
 import config from "../../util/sessionHeader";
-import {DataGrid} from "@material-ui/data-grid";
+import {DataGrid, GridToolbarContainer, GridToolbarExport} from "@material-ui/data-grid";
 import {FilePlus, ListOrdered, UserPlus} from "lucide-react";
 import ModalCreateGroup from "../../components/Group/CreateGroup";
 
@@ -44,13 +44,21 @@ const GroupPage = () => {
 
     useEffect(() => {
         async function getAllGroups() {
-            const {data: allGroups} = await api.get(`${getSession()}/all-groups`, config);
+            const {data: allGroups} = await api.get(`${getSession()}/all-groups`, config());
             setGroups(allGroups.response);
         }
 
         getAllGroups();
 
     }, []);
+
+    function CustomToolbar() {
+        return (
+            <GridToolbarContainer>
+                <GridToolbarExport/>
+            </GridToolbarContainer>
+        );
+    }
 
     return (
         <Layout>
@@ -130,6 +138,9 @@ const GroupPage = () => {
                             pageSize={15}
                             columns={columns}
                             rows={rows}
+                            components={{
+                                Toolbar: CustomToolbar,
+                            }}
                         />
                     </TableContainer>
                 </RightContainer>

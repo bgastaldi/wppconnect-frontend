@@ -5,10 +5,10 @@ import api, {listenerMessages} from "../../services/api";
 import ImageLoader from "../../assets/hand-smartphone.png";
 import ChatComponent from "../../components/ChatPage/ChatComponent";
 import ConversasComponent from "../../components/ChatPage/ConversasComponent";
-import {defaultKey, getSession, getToken, logout} from "../../services/auth";
+import {getSession, getToken} from "../../services/auth";
 import config from "../../util/sessionHeader";
-import history from "../../history";
 import MicRecorder from "mic-recorder-to-mp3";
+import BackdropComponent from "../../components/BackdropComponent";
 
 const SendMessagePage = () => {
     const dropRef = useRef(null);
@@ -25,19 +25,15 @@ const SendMessagePage = () => {
     const [stop, setStop] = useState(true);
     const [isBlocked, setIsBlocked] = useState(false);
     const recorder = useMemo(() => new MicRecorder({bitRate: 128}), []);
+    const [openLoading, setOpenLoading] = useState(false);
 
     useEffect(() => {
         async function checkConnection() {
             try {
-                await api.get(`${getSession()}/check-connection-session`, config);
-                if (defaultKey() === null) {
-                    history.push("/");
-                } else {
-                    await getAllChats();
-                }
+                await api.get(`${getSession()}/check-connection-session`, config());
+                await getAllChats();
             } catch (e) {
-                logout();
-                history.push("/");
+                // history.push("/");
             }
         }
 
@@ -75,7 +71,7 @@ const SendMessagePage = () => {
         }
 
         if (choosedContact.id !== undefined) {
-            if (choosedContact.id._serialized === data.response.chatId || data.response.fromMe && choosedContact.id._serialized === data.response.to) {
+            if (choosedContact.id === data.response.chatId || data.response.fromMe && choosedContact.id._serialized === data.response.to) {
                 setAllMessages((prevState) => {
                     return [...prevState, data.response];
                 });
@@ -134,7 +130,7 @@ const SendMessagePage = () => {
                 await api.post(`${getSession()}/send-voice`, {
                     url: base64data,
                     phone: choosedContact.id.user,
-                }, config);
+                }, config());
             };
 
             const file = new File(buffer, "audio.mp3", {
@@ -159,11 +155,13 @@ const SendMessagePage = () => {
 
     async function getAllChats() {
         try {
-            const {data} = await api.get(`${getSession()}/all-chats`, config);
+            const {data} = await api.get(`${getSession()}/all-chats-with-messages`, config());
+            // const {data} = await api.get(`${getSession()}/all-chats`, config());
             setChats(data.response);
             setDados(data.response);
         } catch (e) {
-            const {data} = await api.get(`${getSession()}/all-chats`, config);
+            const {data} = await api.get(`${getSession()}/all-chats-with-messages`, config());
+            // const {data} = await api.get(`${getSession()}/all-chats`, config());
             setChats(data.response);
             setDados(data.response);
         }
@@ -177,16 +175,27 @@ const SendMessagePage = () => {
 
     async function onClickContact(contact) {
         setChoosedContact(contact);
+        setOpenLoading(true);
 
         try {
-            const response = await api.get(`${getSession()}/chat-by-id/${contact.id.user}`, config);
-            setAllMessages(response.data.response);
+
+            if (contact.id.includes("@g.us")) {
+                const {data} = await api.get(`${getSession()}/chat-by-id/${contact.id.replace("@g.us", "").replace("@g.us", "")}?isGroup=true`, config());
+                await api.post(`${getSession()}/send-seen`, {phone: contact.id.replace("@g.us", "")}, config());
+                setAllMessages(data.response);
+            } else {
+                const {data} = await api.get(`${getSession()}/chat-by-id/${contact.id.replace("@c.us", "").replace("@c.us", "")}?isGroup=false`, config());
+                await api.post(`${getSession()}/send-seen`, {phone: contact.id.replace("@c.us", "")}, config());
+                setAllMessages(data.response);
+            }
+
         } catch (e) {
-            const response = await api.get(`${getSession()}/chat-by-id/${contact.id.user}`, config);
-            setAllMessages(response.data.response);
+            console.log(e);
         }
 
         scrollToBottom();
+        contact.unreadCount = 0;
+        setOpenLoading(false);
     }
 
     async function sendMessage(e) {
@@ -195,17 +204,18 @@ const SendMessagePage = () => {
             setMessage("");
             scrollToBottom();
 
-            if (!choosedContact.isGroup) {
+            console.log(choosedContact);
+            if (choosedContact.id.includes("@c.us")) {
                 await api.post(`${getSession()}/send-message`, {
-                    phone: choosedContact.id.user,
+                    phone: choosedContact.id.replace("@c.us", ""),
                     message: message
-                }, config);
+                }, config());
             } else {
                 await api.post(`${getSession()}/send-message`, {
-                    phone: choosedContact.id.user,
+                    phone: choosedContact.id.replace("@g.us", ""),
                     message: message,
                     isGroup: true
-                }, config);
+                }, config());
             }
         } else {
             alert("Preencha todos os dados antes de enviar");
@@ -224,7 +234,7 @@ const SendMessagePage = () => {
                     phone: choosedContact.id.user,
                     message: "",
                     filename: filename
-                }, config);
+                }, config());
             };
 
             reader.readAsDataURL(e.target.files[0]);
@@ -255,8 +265,14 @@ const SendMessagePage = () => {
         <Layout>
             <Container ref={dropRef}>
                 <ContentContainer>
-                    <ConversasComponent chats={chats} setChats={setChats} onClickContact={onClickContact}
-                                        onSearch={searchChat}/>
+                    <ConversasComponent
+                        chats={chats}
+                        setChats={setChats}
+                        onClickContact={onClickContact}
+                        onSearch={searchChat}
+                    />
+
+                    <BackdropComponent open={openLoading}/>
 
                     <ChatContainer>
                         {
@@ -266,8 +282,8 @@ const SendMessagePage = () => {
                                     <HeaderContact>
                                         <div className={"container-info-ctt"}>
                                             <img
-                                                src={choosedContact.contact.profilePicThumbObj.eurl === undefined ? "https://pbs.twimg.com/profile_images/1259926100261601280/OgmLtUZJ_400x400.png" : choosedContact.contact.profilePicThumbObj.eurl === null ? `https://ui-avatars.com/api/?name=${choosedContact.name}?background=random` : choosedContact.contact.profilePicThumbObj.eurl}
-                                                alt={`${choosedContact.name}`}
+                                                src={`https://ui-avatars.com/api/?name=${choosedContact.name}?background=random`}
+                                                alt={choosedContact.name}
                                                 loading={"lazy"}
                                                 onError={(e) => e.target.src = "https://pbs.twimg.com/profile_images/1259926100261601280/OgmLtUZJ_400x400.png"}
                                             />
@@ -319,50 +335,53 @@ const SendMessagePage = () => {
                             <div ref={messagesEnd}/>
                         </ul>
 
-                        <form className={"bottom-container"} onSubmit={(e) => sendMessage(e)}>
-                            <label>
-                                <input type={"file"} onChange={onChangeAnexo}/>
-                                <div className={"attach-info"}>
-                                    <Paperclip/>
-                                </div>
-                            </label>
-                            <input
-                                placeholder={"Digite uma mensagem..."}
-                                value={message}
-                                onChange={(e) => {
-                                    setMessage(e.target.value);
-                                }}
-                            />
+                        {
+                            choosedContact.length <= 0 ? null : (
+                                <form className={"bottom-container"} onSubmit={(e) => sendMessage(e)}>
+                                    <label>
+                                        <input type={"file"} onChange={onChangeAnexo}/>
+                                        <div className={"attach-info"}>
+                                            <Paperclip/>
+                                        </div>
+                                    </label>
+                                    <input
+                                        placeholder={"Digite uma mensagem..."}
+                                        value={message}
+                                        onChange={(e) => {
+                                            setMessage(e.target.value);
+                                        }}
+                                    />
 
-                            {
-                                message === "" ? (
-                                    recordState === null ? (
-                                        <Mic onClick={startRecording}/>
-                                    ) : (
-                                        <Contador>
-                                            <div className={"main-cont"}>
-                                                <XCircle onClick={cancelRecording}/>
-                                                <div className={"counter"}>
-                                                    <p>
-                                                        {
-                                                            minutos === 0 ? (
-                                                                `${segundos}s`
-                                                            ) : (
-                                                                `${minutos}m ${segundos}s`
-                                                            )
-                                                        }
-                                                    </p>
-                                                </div>
-                                                <CheckCircle onClick={() => finishRecording()}/>
-                                            </div>
-                                        </Contador>
-                                    )
-                                ) : (
-                                    <Send type={"submit"} onClick={(e) => sendMessage(e)}/>
-                                )
-                            }
-                        </form>
-
+                                    {
+                                        message === "" ? (
+                                            recordState === null ? (
+                                                <Mic onClick={startRecording}/>
+                                            ) : (
+                                                <Contador>
+                                                    <div className={"main-cont"}>
+                                                        <XCircle onClick={cancelRecording}/>
+                                                        <div className={"counter"}>
+                                                            <p>
+                                                                {
+                                                                    minutos === 0 ? (
+                                                                        `${segundos}s`
+                                                                    ) : (
+                                                                        `${minutos}m ${segundos}s`
+                                                                    )
+                                                                }
+                                                            </p>
+                                                        </div>
+                                                        <CheckCircle onClick={() => finishRecording()}/>
+                                                    </div>
+                                                </Contador>
+                                            )
+                                        ) : (
+                                            <Send type={"submit"} onClick={(e) => sendMessage(e)}/>
+                                        )
+                                    }
+                                </form>
+                            )
+                        }
 
                     </ChatContainer>
                 </ContentContainer>

@@ -65,7 +65,7 @@ function ModalCreateGroup({open, handleClose}) {
     }, [open]);
 
     async function getContacts() {
-        const {data} = await api.get(`${getSession()}/all-contacts`, config);
+        const {data} = await api.get(`${getSession()}/all-contacts`, config());
         const arr = [];
         for (const contact of data.response) {
             if (contact.isMyContact && contact.id.user !== undefined)
@@ -100,13 +100,11 @@ function ModalCreateGroup({open, handleClose}) {
             try {
                 handleToggleBackdrop();
 
-                console.log(tagsChoosed);
-
-                // const data = {
-                //     participants: tagsChoosed,
-                //     name: groupName
-                // };
-                // await api.post(`${getSession()}/create-group`, data, config);
+                const data = {
+                    participants: tagsChoosed,
+                    name: groupName
+                };
+                await api.post(`${getSession()}/create-group`, data, config);
 
                 setTimeout(() => {
                     handleCloseBackdrop();
@@ -191,8 +189,8 @@ function ModalCreateGroup({open, handleClose}) {
                                 />
 
                                 <span>
-                                      <FilePlus/> Nome do Grupo
-                                   </span>
+                                  <FilePlus/> Nome do Grupo
+                               </span>
                             </InputCustom>
 
                             <Autocomplete
@@ -222,7 +220,7 @@ function ModalCreateGroup({open, handleClose}) {
                             Em breve
                         </CancelButton>
                         <SendButton onClick={onSubmitForm}>
-                            Criar
+                            {/*Criar*/}
                         </SendButton>
                     </Footer>
                 </Container>

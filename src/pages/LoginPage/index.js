@@ -56,8 +56,8 @@ export default function NewSessionPage() {
                     animationRef.current.classList.remove("animation");
                 }
 
-                document.querySelector("#title").textContent = "Escaneie o QRCode";
-                document.querySelector("#description").textContent = "Para prosseguir você deve abrir o seu app do Whatsapp escanear o QRCode através da câmera.";
+                // document.querySelector("#title").textContent = "Escaneie o QRCode";
+                // document.querySelector("#description").textContent = "Para prosseguir você deve abrir o seu app do Whatsapp escanear o QRCode através da câmera.";
             }
         });
 
@@ -182,51 +182,65 @@ export default function NewSessionPage() {
                                 <div id={"right-div"}>
                                     {
                                         qrCode === "" ? null : (
-                                            <ImageCustom
-                                                ref={animationRef}
-                                                className={"animation noselect"}
-                                                autoplay
-                                                src={qrCode}
-                                                alt={"Smartphone"}
-                                                draggable={"false"}
-                                            />
+                                            <div style={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                justifyContent: "center",
+                                                alignItems: "center"
+                                            }}>
+                                                <ImageCustom
+                                                    ref={animationRef}
+                                                    className={"animation noselect"}
+                                                    autoplay
+                                                    src={qrCode}
+                                                    alt={"Smartphone"}
+                                                    draggable={"false"}
+                                                />
+                                                <Title>
+                                                    Scan QRCode
+                                                </Title>
+                                            </div>
                                         )
                                     }
 
-                                    <Formulario onSubmit={(e) => submitSession(e)}>
-                                        <Title id={"title"}>
-                                            Entre com sua sessão
-                                        </Title>
+                                    {
+                                        qrCode !== "" ? null : (
+                                            <Formulario onSubmit={(e) => submitSession(e)}>
+                                                <Title id={"title"}>
+                                                    Entre com sua sessão
+                                                </Title>
 
-                                        <Description id={"description"}>
-                                            Digite o nome da sessão e token para entrar em sua conta
-                                        </Description>
+                                                <Description id={"description"}>
+                                                    Digite o nome da sessão e token para entrar em sua conta
+                                                </Description>
 
-                                        <div className={"top-info"}>
-                                            <small>
-                                                Sessão
-                                            </small>
-                                        </div>
-                                        <input autoComplete="off" placeholder="Nome da sessão" value={session}
-                                               onChange={(e) => setSession(e.target.value)}/>
+                                                <div className={"top-info"}>
+                                                    <small>
+                                                        Sessão
+                                                    </small>
+                                                </div>
+                                                <input autoComplete="off" placeholder="Nome da sessão" value={session}
+                                                       onChange={(e) => setSession(e.target.value)}/>
 
-                                        <div className={"top-info"}>
-                                            <small>
-                                                Token
-                                            </small>
+                                                <div className={"top-info"}>
+                                                    <small>
+                                                        Token
+                                                    </small>
 
-                                            <span onClick={() => handleOpenModal()}>
+                                                    <span onClick={() => handleOpenModal()}>
                                                     Não sabe o token?
                                                 </span>
-                                        </div>
+                                                </div>
 
-                                        <input autoComplete="off" placeholder="Token" value={token}
-                                               onChange={(e) => setToken(e.target.value)}/>
+                                                <input autoComplete="off" placeholder="Token" value={token}
+                                                       onChange={(e) => setToken(e.target.value)}/>
 
-                                        <button type="submit" id="send-btn">
-                                            Enviar
-                                        </button>
-                                    </Formulario>
+                                                <button type="submit" id="send-btn">
+                                                    Enviar
+                                                </button>
+                                            </Formulario>
+                                        )
+                                    }
                                 </div>
                             </div>
 

@@ -2,13 +2,23 @@ import React, {useEffect} from "react";
 import {ContactInfo, Layout, SearchComponent, UserData} from "./style";
 import {Search} from "react-feather";
 import PropTypes from "prop-types";
+import {listenerMessages} from "../../../services/api";
 
 const defaultImage = "https://pbs.twimg.com/profile_images/1259926100261601280/OgmLtUZJ_400x400.png";
 
-const ConversasComponent = ({chats, onSearch, onClickContact}) => {
+const ConversasComponent = ({chats, setChats, onSearch, onClickContact}) => {
     useEffect(() => {
+        listenerMessages((err, data) => {
+            if (err) return;
 
-    }, []);
+            const newList = [];
+            const filteredList = chats.filter((filtro) => filtro.id !== data.response.chatId);
+
+            newList.unshift([...filteredList, data.response]);
+            setChats(newList);
+            console.log(newList);
+        });
+    }, [chats]);
 
     const onChangeContact = () => {
         const elContactsMain = document.querySelector("#all-contacts");
@@ -17,7 +27,6 @@ const ConversasComponent = ({chats, onSearch, onClickContact}) => {
         for (const user of contacts) {
             user.addEventListener("click", function () {
                 const current = document.getElementsByClassName("active");
-                console.log(current);
 
                 if (current.length > 0) {
                     current[0].classList.remove("active");

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import DownloadImage from "../../../assets/icons8-down-arrow-96.png";
+import DownloadImage from "../../../../../../../WPPConnect/wppconnect-frontend/src/assets/icons8-down-arrow-96.png";
 
 export const ChatLayout = styled.div`
   width: 100%;

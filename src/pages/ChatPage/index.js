@@ -1,14 +1,14 @@
 import React, {useEffect, useMemo, useRef, useState} from "react";
 import {ChatContainer, Contador, Container, ContentContainer, HeaderContact, Layout, WaitingContainer} from "./style";
 import {CheckCircle, Mic, Paperclip, Send, XCircle} from "react-feather";
-import api, {listenerMessages} from "../../../../../../WPPConnect/wppconnect-frontend/src/services/api";
-import ImageLoader from "../../../../../../WPPConnect/wppconnect-frontend/src/assets/hand-smartphone.png";
+import api, {listenerMessages} from "../../services/api";
+import ImageLoader from "../../assets/hand-smartphone.png";
 import ChatComponent from "../../components/ChatPage/ChatComponent";
 import ConversasComponent from "../../components/ChatPage/ConversasComponent";
-import {getSession, getToken} from "../../../../../../WPPConnect/wppconnect-frontend/src/services/auth";
-import config from "../../../../../../WPPConnect/wppconnect-frontend/src/util/sessionHeader";
+import {getSession, getToken} from "../../services/auth";
+import config from "../../util/sessionHeader";
 import MicRecorder from "mic-recorder-to-mp3";
-import BackdropComponent from "../../../../../../WPPConnect/wppconnect-frontend/src/components/BackdropComponent";
+import BackdropComponent from "../../components/BackdropComponent";
 
 const SendMessagePage = () => {
     const dropRef = useRef(null);

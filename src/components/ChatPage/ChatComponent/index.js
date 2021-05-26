@@ -8,11 +8,11 @@ import {
     StickerComponent
 } from "./style";
 import AudioComponent from "../AudioComponent";
-import api from "../../../../../../../WPPConnect/wppconnect-frontend/src/services/api";
+import api from "../../../services/api";
 import ImageModal from "./ImageModal";
 import PropTypes from "prop-types";
-import config from "../../../../../../../WPPConnect/wppconnect-frontend/src/util/sessionHeader";
-import formatWppMarkdown from "../../../../../../../WPPConnect/wppconnect-frontend/src/util/functionsMarkdown";
+import config from "../../../util/sessionHeader";
+import formatWppMarkdown from "../../../util/functionsMarkdown";
 import {Download} from "react-feather";
 
 const defaultImage = "https://pbs.twimg.com/profile_images/1259926100261601280/OgmLtUZJ_400x400.png";
